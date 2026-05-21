@@ -19,6 +19,7 @@
 [ext_resource type="Resource" uid="uid://7dhn7807h7x1" path="res://ResourceFiles/blasterD.tres" id="17_m2cla"]
 [ext_resource type="Resource" uid="uid://ci7hm8251osqd" path="res://ResourceFiles/blasterK.tres" id="18_8ke6w"]
 [ext_resource type="StyleBox" uid="uid://c50syhy1a4dmh" path="res://PlayerCharacter/UI/player_character_ui_theme.tres" id="18_ovq28"]
+[ext_resource type="PackedScene" uid="uid://dh8kle052d1yo" path="res://UI/Scenes/HUD.tscn" id="27_s4fyg"]
 [ext_resource type="Script" uid="uid://sca7ypsol83f" path="res://PlayerCharacter/StateMachine/state_machine_script.gd" id="54_e0r17"]
 [ext_resource type="Script" uid="uid://stil4xkf3tk0" path="res://PlayerCharacter/StateMachine/idle_state_script.gd" id="55_dayh2"]
 [ext_resource type="Script" uid="uid://blt7dest23fk0" path="res://PlayerCharacter/StateMachine/walk_state_script.gd" id="56_w3td4"]
@@ -743,6 +744,7 @@ target_position = Vector3(0, -3, 0)
 debug_shape_custom_color = Color(0, 0.823529, 0.956863, 1)
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=1316895583 node_paths=PackedStringArray("play_char")]
+visible = false
 script = ExtResource("16_5jm78")
 play_char = NodePath("..")
 metadata/_edit_use_anchors_ = true
@@ -1152,6 +1154,10 @@ collision_mask = 8
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PickUpDetection" unique_id=592314516]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.51840794, 0)
 shape = SubResource("BoxShape3D_w05lp")
+
+[node name="Hud" parent="." unique_id=1673443731 node_paths=PackedStringArray("player", "weapon_manager") instance=ExtResource("27_s4fyg")]
+player = NodePath("..")
+weapon_manager = NodePath("../CameraHolder/Camera/WeaponManager")
 
 [connection signal="change_fov" from="StateMachine" to="CameraHolder" method="change_fov"]
 [connection signal="animation_finished" from="CameraHolder/Camera/WeaponManager/FPS_Rig/AnimationPlayer" to="CameraHolder/Camera/WeaponManager" method="_on_animation_player_animation_finished"]

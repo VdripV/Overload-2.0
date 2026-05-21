@@ -2,6 +2,13 @@ extends CharacterBody3D
 
 class_name PlayerCharacter
 
+signal health_changed(current: float, max_health: float)
+signal armor_changed(current: float, max_armor: float)
+@export var max_health: float = 100.0
+@export var max_armor: float = 100.0
+var health: float = 100.0 : set = set_health
+var armor: float = 0.0 : set = set_armor
+
 @export_group("Movement variables")
 var move_speed: float
 var move_accel: float
@@ -160,6 +167,7 @@ var default_input_actions : Dictionary
 @onready var right_wall_check : RayCast3D = %RightWallCheck
 
 func _ready() -> void:
+	Global.player = self
 	#set and value references
 	hit_ground_cooldown_ref = hit_ground_cooldown
 	jump_cooldown_ref = jump_cooldown
@@ -303,4 +311,11 @@ func tween_model_height(state_model_height : float) -> void:
 	else:
 		model_tween.tween_interval(0.1)
 	model_tween.finished.connect(Callable(model_tween, "kill"))
-		
+
+func set_health(value: float) -> void:
+	health = clamp(value, 0.0, max_health)
+	emit_signal("health_changed", health, max_health)
+
+func set_armor(value: float) -> void:
+	armor = clamp(value, 0.0, max_armor)
+	emit_signal("armor_changed", armor, max_armor)

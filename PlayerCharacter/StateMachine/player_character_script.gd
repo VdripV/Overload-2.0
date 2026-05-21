@@ -4,10 +4,16 @@ class_name PlayerCharacter
 
 signal health_changed(current: float, max_health: float)
 signal armor_changed(current: float, max_armor: float)
+signal sprint_state_changed(is_sprinting: bool)
+
 @export var max_health: float = 100.0
 @export var max_armor: float = 100.0
 var health: float = 100.0 : set = set_health
 var armor: float = 0.0 : set = set_armor
+
+var is_dead: bool = false
+var invincible: bool = false
+@export var invincible_time: float = 1.0
 
 @export_group("Movement variables")
 var move_speed: float
@@ -16,18 +22,17 @@ var move_deccel: float
 var input_direction: Vector2
 var move_direction: Vector3
 var desired_move_speed: float
-@export var desired_move_speed_curve: Curve #accumulated speed
+@export var desired_move_speed_curve: Curve
 @export var max_desired_move_speed: float = 30.0
 @export var in_air_move_speed_curve: Curve
-@export var hit_ground_cooldown: float = 0.1 #amount of time the character keep his accumulated speed before losing it (while being on ground)
+@export var hit_ground_cooldown: float = 0.1
 var hit_ground_cooldown_ref: float
-@export var bunny_hop_dms_incre: float = 3.0 #bunny hopping desired move speed incrementer
+@export var bunny_hop_dms_incre: float = 3.0
 @export var auto_bunny_hop: bool = false
 var last_frame_position: Vector3
 var last_frame_velocity: Vector3
 var was_on_floor: bool
-var walk_or_run: String = "WalkState" #keep in memory if play char was walking or running before being in the air
-#for states that require visible changes of the model
+var walk_or_run: String = "WalkState"
 @export var base_hitbox_height: float = 2.0
 @export var base_model_height: float = 1.0
 @export var height_change_duration: float = 0.15
@@ -36,7 +41,7 @@ var walk_or_run: String = "WalkState" #keep in memory if play char was walking o
 @export var crouch_speed: float = 6.0
 @export var crouch_accel: float = 12.0
 @export var crouch_deccel: float = 11.0
-@export var continious_crouch: bool = false #if true, doesn't need to keep crouch button on to crouch
+@export var continious_crouch: bool = false
 @export var crouch_hitbox_height: float = 1.2
 @export var crouch_model_height: float = 0.6
 
@@ -49,7 +54,7 @@ var walk_or_run: String = "WalkState" #keep in memory if play char was walking o
 @export var run_speed: float = 12.0
 @export var run_accel: float = 10.0
 @export var run_deccel: float = 9.0
-@export var continious_run: bool = false #if true, doesn't need to keep run button on to run
+@export var continious_run: bool = false
 
 @export_group("Jump variables")
 @export var jump_height: float = 2.0
@@ -75,12 +80,12 @@ var slide_direction: Vector3 = Vector3.ZERO
 var slide_time_ref: float
 @export var time_bef_can_slide_again: float = 1.5
 var time_bef_can_slide_again_ref: float
-@export_range(0.0, 90.0, 0.1) var max_slope_angle: float = 75.0 #max slope angle where the slide time operate
-@export_range(0.0, 0.1, 0.001) var uphill_tolerance : float = 0.05 #vertical tolerance, to avoid fake uphills
+@export_range(0.0, 90.0, 0.1) var max_slope_angle: float = 75.0
+@export_range(0.0, 0.1, 0.001) var uphill_tolerance : float = 0.05
 @export var amount_velocity_lost_per_sec: float = 4.0
-@export var slope_sliding_dms_incre: float = 2.0 #slope sliding desired move speed incrementer
-@export var slope_sliding_ms_incre: float = 2.0 #slope sliding slide speed incrementer
-@export var priority_over_crouch: bool = true #if enabled, give priority over crouch state (because crouch and slide actions are assigned at the same input action)
+@export var slope_sliding_dms_incre: float = 2.0
+@export var slope_sliding_ms_incre: float = 2.0
+@export var priority_over_crouch: bool = true
 @export var continious_slide: bool = true
 var slide_buff_on: bool = false
 @export var slide_hitbox_height: float = 1.0
@@ -102,8 +107,8 @@ var has_dashed : bool = false
 
 @export_group("Wallrun variables")
 var can_wallrun : bool = true
-var side_check_raycast_collided : int = 0 #if -1, left side, if 1, right side
-var last_wallrunned_wall_out_of_time : int = 0 #if -1, left side, if 1, right side
+var side_check_raycast_collided : int = 0
+var last_wallrunned_wall_out_of_time : int = 0
 var wall_normal : Vector3 = Vector3.ZERO
 var wall_forward_dir : Vector3 = Vector3.ZERO
 @export var use_desired_move_speed_wallrun : bool = false
@@ -152,7 +157,6 @@ run_action, crouch_action, jump_action, slide_action, dash_action, fly_action]
 @export var check_on_ready_if_inputs_registered : bool = true
 var default_input_actions : Dictionary
 
-#references variables
 @onready var cam_holder: Node3D = $CameraHolder
 @onready var cam: Camera3D = %Camera
 @onready var model: MeshInstance3D = $Model
@@ -168,7 +172,11 @@ var default_input_actions : Dictionary
 
 func _ready() -> void:
 	Global.player = self
-	#set and value references
+	add_to_group("player")
+	add_to_group("Player")
+	collision_layer = 1
+	collision_mask = 65535
+	
 	hit_ground_cooldown_ref = hit_ground_cooldown
 	jump_cooldown_ref = jump_cooldown
 	jump_cooldown = -1.0
@@ -191,7 +199,6 @@ func _ready() -> void:
 	input_actions_check()
 	
 func build_default_keybinding() -> void:
-	#build it in runtime to ensure that export variables have been set
 	default_input_actions = {
 		move_forward_action : [Key.KEY_W, Key.KEY_UP],
 		move_backward_action : [Key.KEY_S, Key.KEY_DOWN],
@@ -206,8 +213,6 @@ func build_default_keybinding() -> void:
 	}
 	
 func input_actions_check() -> void:
-	#check if the input actions written in the editor are the same as the ones registered in the Input map, and if they are written correctly
-	#if not, add it to runtime Input map with default keybindings
 	if check_on_ready_if_inputs_registered:
 		var registered_input_actions: Array[StringName] = []
 		for input_action in InputMap.get_actions():
@@ -234,21 +239,17 @@ func input_actions_check() -> void:
 				
 func _process(delta: float) -> void:
 	wallrun_timer(delta)
-	
 	slide_timer(delta)
-
 	dash_timer(delta)
 	
 func _physics_process(_delta: float) -> void:
 	modify_physics_properties()
-
 	move_and_slide()
 	
 func wallrun_timer(delta : float) -> void:
 	if !can_wallrun:
 		if time_bef_can_wallrun_again > 0.0: time_bef_can_wallrun_again -= delta
 		else:
-			#can only reset capacity of wallrunning when not currently wallrunning
 			if state_machine.curr_state_name != "Wallrun":
 				wallrun_time = wallrun_time_ref
 				can_wallrun = true
@@ -256,13 +257,10 @@ func wallrun_timer(delta : float) -> void:
 func slide_timer(delta: float) -> void:
 	if time_bef_can_slide_again > 0.0: time_bef_can_slide_again -= delta
 	else:
-		#can only reset slide time when not sliding
 		if state_machine.curr_state_name != "Slide":
 			slide_time = slide_time_ref
 			
 func dash_timer(delta: float) -> void:
-	#reloads dash every *timeBefReloadDash* time, to avoid dash spamming
-	#if you want to be able to spam dashes, set timeBefReloadDash to 0.0
 	if nb_dashs_allowed < nb_dashs_allowed_ref:
 		if time_bef_reload_dash > 0.0: time_bef_reload_dash -= delta
 		else:
@@ -271,29 +269,24 @@ func dash_timer(delta: float) -> void:
 
 	if time_bef_can_dash_again > 0.0: time_bef_can_dash_again -= delta
 	else:
-		#can only reset slide time when not dashing
 		if state_machine.curr_state_name != "Dash":
 			dash_time = dash_time_ref
 			
 func modify_physics_properties() -> void:
-	last_frame_position = global_position #get play char global position every frame
-	last_frame_velocity = velocity #get play char velocity every frame
-	was_on_floor = !is_on_floor() #check if play char was on floor every frame
+	last_frame_position = global_position
+	last_frame_velocity = velocity
+	was_on_floor = !is_on_floor()
 	
 func gravity_apply(delta: float) -> void:
-	# if play char goes up, apply jump gravity
-	#otherwise, apply fall gravity
-	if not is_on_floor(): #no need to push play char if he's already on the floor
+	if not is_on_floor():
 		if velocity.y >= 0.0: velocity.y += jump_gravity * delta
 		elif velocity.y < 0.0: velocity.y += fall_gravity * delta
 	
-#use of 2 tweens to change the hitbox and model heights, relative to a specific state
 func tween_hitbox_height(state_hitbox_height : float) -> void:
 	var hitbox_tween: Tween = create_tween()
 	if hitbox != null:
 		hitbox_tween.tween_method(func(v): set_hitbox_height(v), hitbox.shape.height, 
 		state_hitbox_height, height_change_duration)
-	#to avoid "no tweeners" error
 	else:
 		hitbox_tween.tween_interval(0.1)
 	hitbox_tween.finished.connect(Callable(hitbox_tween, "kill"))
@@ -307,10 +300,54 @@ func tween_model_height(state_model_height : float) -> void:
 	if model != null:
 		model_tween.tween_property(model, "scale:y", 
 		state_model_height, height_change_duration)
-	#to avoid "no tweeners" error
 	else:
 		model_tween.tween_interval(0.1)
 	model_tween.finished.connect(Callable(model_tween, "kill"))
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("sprint"):
+		sprint_state_changed.emit(true)
+	elif event.is_action_released("sprint"):
+		sprint_state_changed.emit(false)
+
+func hit(damage: int) -> void:
+	if is_dead or invincible:
+		return
+	
+	health -= damage
+	emit_signal("health_changed", health, max_health)
+	
+	if health <= 0:
+		die()
+		return
+	
+	invincible = true
+	await get_tree().create_timer(invincible_time).timeout
+	invincible = false
+	
+func hit_with_knockback(damage: int, knockbackDirection: Vector3, knockbackForce: float) -> void:
+	if is_dead:
+		return
+	
+	health -= damage
+	emit_signal("health_changed", health, max_health)
+	
+	velocity = knockbackDirection.normalized() * knockbackForce
+	
+	if health <= 0:
+		die()
+		return
+	
+	invincible = true
+	await get_tree().create_timer(invincible_time).timeout
+	invincible = false
+
+func die() -> void:
+	is_dead = true
+	remove_from_group("player")
+	remove_from_group("Player")
+	await get_tree().create_timer(1.5).timeout
+	get_tree().reload_current_scene()
 
 func set_health(value: float) -> void:
 	health = clamp(value, 0.0, max_health)

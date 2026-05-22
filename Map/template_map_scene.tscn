@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://d4gavwq81shmv" path="res://Map/MovementModifiers/conveyorZone/conveyor_zone_scene.tscn" id="7_q4rg5"]
 [ext_resource type="PackedScene" uid="uid://ct3rwravhrwk1" path="res://Map/MovementModifiers/jumpPads/directionalJumpPad/directional_jump_pad_scene.tscn" id="8_q4rg5"]
 [ext_resource type="PackedScene" uid="uid://8wolti2rkt2q" path="res://Map/Spawnable_Weapons/blaster_d.tscn" id="9_43v1x"]
+[ext_resource type="Script" uid="uid://bqfiw6scgwhfx" path="res://Map/Scripts/finishZone.gd" id="9_gfkqx"]
 [ext_resource type="PackedScene" uid="uid://bxwjpayjtdd2g" path="res://Map/Spawnable_Weapons/blaster_k.tscn" id="10_pdlds"]
 [ext_resource type="PackedScene" uid="uid://7m3mdu2x8gld" path="res://Map/Spawnable_Weapons/blaster_n.tscn" id="11_7oo5g"]
 [ext_resource type="PackedScene" uid="uid://bqgwlh6y8rm1h" path="res://Map/MovementModifiers/conveyorZone/enemies/enemy.tscn" id="12_chpsd"]
@@ -48,6 +49,9 @@ _data = {
 "tilts": PackedFloat32Array(0, 0)
 }
 point_count = 2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ix81b"]
+size = Vector3(14.632069, 3.1194153, 1)
 
 [node name="TemplateMap" type="Node3D" unique_id=1644857194]
 
@@ -406,6 +410,16 @@ path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("4_ivwfa")
+
+[node name="Area3D" type="Area3D" parent="Map" unique_id=1676306443]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, -11, 70)
+collision_layer = 3
+collision_mask = 3
+script = ExtResource("9_gfkqx")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Map/Area3D" unique_id=668137925]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.463804, -7.878372, 2.0093536)
+shape = SubResource("BoxShape3D_ix81b")
 
 [node name="blasterD" parent="." unique_id=1904445761 instance=ExtResource("9_43v1x")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.538757, 2.0798402, -15.848989)

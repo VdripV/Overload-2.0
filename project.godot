@@ -19,6 +19,7 @@ config/features=PackedStringArray("4.6", "Forward Plus")
 Global="*uid://iov1u1jvipky"
 SettingsData="*uid://cix43troeaxqy"
 PauseHandler="*uid://dxdcujeklpo34"
+StatsData="*uid://dqe2wadwq571q"
 
 [display]
 

@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://bea3lwfha324g"
-path="res://.godot/imported/Klick.wav-851740df85eca415766a5db64cf20c4b.sample"
+uid="uid://dk00sf3vimbap"
+path="res://.godot/imported/click.wav-e4fbf3ba2fd2596a9964c1e9b4e6f23c.sample"
 
 [deps]
 
-source_file="res://UI/Assets/Sounds/Klick.wav"
-dest_files=["res://.godot/imported/Klick.wav-851740df85eca415766a5db64cf20c4b.sample"]
+source_file="res://UI/Assets/Sounds/click.wav"
+dest_files=["res://.godot/imported/click.wav-e4fbf3ba2fd2596a9964c1e9b4e6f23c.sample"]
 
 [params]
 

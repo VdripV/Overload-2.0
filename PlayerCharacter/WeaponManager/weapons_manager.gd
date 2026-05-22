@@ -30,6 +30,7 @@ var Weapon_List = {}
 enum {NULL, HITSCAN, PROJECTILE}
 
 func _ready() -> void:
+	Global.weapon = self
 	Initialize(Start_Weapons)
 	#pickUp_sound.stream = preload("res://audio/weaponPickUp.wav")
 	#drop_sound.stream = preload("res://audio/drop.wav")
@@ -55,6 +56,9 @@ func _input(event: InputEvent) -> void:
 	
 	if event.is_action_pressed("drop") and Weapon_Stack.size() != 1:
 		drop(Current_Weapon.Weapon_Name)
+	
+	if event.is_action_pressed("melee"):
+		melee()
 
 func Initialize(_start_weapons: Array):
 	for weapon in _weapon_resources:
@@ -91,7 +95,21 @@ func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 	if anim_name == Current_Weapon.Shoot_Anim && Current_Weapon.Auto_Fire == true:
 		if Input.is_action_pressed("shoot"):
 			shoot()
-			pass
+	
+	if anim_name == Current_Weapon.Reload_Anim:
+		Calculate_Reload()
+
+func melee():
+	if animation_player.get_current_animation() != Current_Weapon.Melee_Anim:
+		animation_player.play(Current_Weapon.Melee_Anim)
+		var Camera_Collision = Get_Camera_Collision(Current_Weapon.Melee_Range)
+		if Camera_Collision[0]:
+			var Direction = (Camera_Collision[1]-owner.global_transform.origin).normalized()
+			var Hit_Indicator = Debug_Bullet.instantiate()
+			var world = get_tree().get_root()
+			world.add_child(Hit_Indicator)
+			Hit_Scan_Damage(Camera_Collision[0], Direction, Camera_Collision[1], Current_Weapon.Melee_Damage)
+			
 			
 func shoot():
 	if Current_Weapon.Current_Ammo != 0:
@@ -99,12 +117,12 @@ func shoot():
 			animation_player.play(Current_Weapon.Shoot_Anim)
 			Current_Weapon.Current_Ammo -= 1
 			emit_signal("Update_Ammo", [Current_Weapon.Current_Ammo, Current_Weapon.Reserve_Ammo])
-			var Camera_Collision = Get_Camera_Collision()
+			var Camera_Collision = Get_Camera_Collision(Current_Weapon.Weapon_Range)
 			match Current_Weapon.Type:
 				NULL:
 					print("Weapon Type Not Chosen")
 				HITSCAN:
-					Hit_Scan_Collision(Camera_Collision)
+					Hit_Scan_Collision(Camera_Collision[1])
 				PROJECTILE:
 					Launch_Projectile()
 	else:
@@ -118,30 +136,30 @@ func reload():
 			animation_player.play(Current_Weapon.Reload_Anim)
 			#reload_sound.stream = Current_Weapon.Reload_Sounds
 			#reload_sound.play()
-			var Reload_Amount = min(Current_Weapon.Magazine-Current_Weapon.Current_Ammo, Current_Weapon.Magazine, Current_Weapon.Reserve_Ammo)
-			
-			Current_Weapon.Current_Ammo = Current_Weapon.Current_Ammo + Reload_Amount
-			Current_Weapon.Reserve_Ammo = Current_Weapon.Reserve_Ammo - Reload_Amount
-			
-			emit_signal("Update_Ammo", [Current_Weapon.Current_Ammo, Current_Weapon.Reserve_Ammo])
 		else:
 			animation_player.play(Current_Weapon.Out_Of_Ammo_Anim)
 			#out_of_ammo.play()
-			
-func Get_Camera_Collision() -> Vector3:
+
+func Calculate_Reload():
+	var Reload_Amount = min(Current_Weapon.Magazine-Current_Weapon.Current_Ammo, Current_Weapon.Magazine, Current_Weapon.Reserve_Ammo)
+	Current_Weapon.Current_Ammo = Current_Weapon.Current_Ammo + Reload_Amount
+	Current_Weapon.Reserve_Ammo = Current_Weapon.Reserve_Ammo - Reload_Amount
+	emit_signal("Update_Ammo", [Current_Weapon.Current_Ammo, Current_Weapon.Reserve_Ammo])
+	
+func Get_Camera_Collision(_weapon_range) -> Array:
 	var viewport = get_viewport().get_size()
 	
 	var Ray_Origin = camera.project_ray_origin(viewport/2)
-	var Ray_End = Ray_Origin + camera.project_ray_normal(viewport/2) * Current_Weapon.Weapon_Range
+	var Ray_End = Ray_Origin + camera.project_ray_normal(viewport/2) * _weapon_range
 	
 	var New_Intersction = PhysicsRayQueryParameters3D.create(Ray_Origin, Ray_End)
 	var Intersection = get_world_3d().direct_space_state.intersect_ray(New_Intersction)
 	
 	if not Intersection.is_empty():
-		var Col_Point = Intersection.position
+		var Col_Point = [Intersection.collider, Intersection.position]
 		return Col_Point
 	else:
-		return Ray_End
+		return [null, Ray_End]
 
 func Hit_Scan_Collision(Collision_Point):
 	var Bullet_Direction = (Collision_Point - Bullet_Point.get_global_transform().origin).normalized()
@@ -154,11 +172,11 @@ func Hit_Scan_Collision(Collision_Point):
 		var world = get_tree().get_root()
 		world.add_child(Hit_Indicator)
 		Hit_Indicator.global_translate(Bullet_Collision.position)
-		Hit_Scan_Damage(Bullet_Collision.collider, Bullet_Direction, Bullet_Collision.position)
+		Hit_Scan_Damage(Bullet_Collision.collider, Bullet_Direction, Bullet_Collision.position, Current_Weapon.Damage)
 
-func Hit_Scan_Damage(Collider, Direction, Position):
+func Hit_Scan_Damage(Collider, Direction, Position, _weapon_damage):
 	if Collider.is_in_group("Target") and Collider.has_method("Hit_Successful"):
-		Collider.Hit_Successful(Current_Weapon.Damage, Direction, Position)
+		Collider.Hit_Successful(_weapon_damage, Direction, Position)
 
 func Launch_Projectile():
 	var Projectile = Current_Weapon.Projectile_To_Load.instantiate()
@@ -166,6 +184,7 @@ func Launch_Projectile():
 	Projectile.transform.basis = Gun_Raycast.global_transform.basis
 	Gun_Raycast.add_child(Projectile)
 	Projectile.Damage = Current_Weapon.Damage
+	Projectile.Speed = Current_Weapon.Projectile_Velocity
 	#gun_sound.stream = Current_Weapon.Shoot_Sounds
 	#gun_sound.play()
 	

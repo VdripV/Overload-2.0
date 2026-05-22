@@ -174,8 +174,8 @@ func _ready() -> void:
 	Global.player = self
 	add_to_group("player")
 	add_to_group("Player")
-	collision_layer = 1
-	collision_mask = 65535
+	#collision_layer = 1
+	#collision_mask = 65535
 	
 	hit_ground_cooldown_ref = hit_ground_cooldown
 	jump_cooldown_ref = jump_cooldown

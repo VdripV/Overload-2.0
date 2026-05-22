@@ -17,8 +17,8 @@
 [ext_resource type="Texture2D" uid="uid://dv747ov6fcrsg" path="res://Arts/crosshair.png" id="16_gfbru"]
 [ext_resource type="Resource" uid="uid://rprvuama415r" path="res://ResourceFiles/blasterN.tres" id="16_gfley"]
 [ext_resource type="Resource" uid="uid://7dhn7807h7x1" path="res://ResourceFiles/blasterD.tres" id="17_m2cla"]
-[ext_resource type="Resource" uid="uid://ci7hm8251osqd" path="res://ResourceFiles/blasterK.tres" id="18_8ke6w"]
 [ext_resource type="StyleBox" uid="uid://c50syhy1a4dmh" path="res://PlayerCharacter/UI/player_character_ui_theme.tres" id="18_ovq28"]
+[ext_resource type="Resource" uid="uid://ci7hm8251osqd" path="res://ResourceFiles/blasterK.tres" id="18_s4fyg"]
 [ext_resource type="PackedScene" uid="uid://dh8kle052d1yo" path="res://UI/Scenes/HUD.tscn" id="27_s4fyg"]
 [ext_resource type="Script" uid="uid://sca7ypsol83f" path="res://PlayerCharacter/StateMachine/state_machine_script.gd" id="54_e0r17"]
 [ext_resource type="Script" uid="uid://stil4xkf3tk0" path="res://PlayerCharacter/StateMachine/idle_state_script.gd" id="55_dayh2"]
@@ -239,6 +239,34 @@ tracks/2/keys = {
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [Vector3(0.16884387, -0.178532, -0.6616937), Vector3(0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_s4fyg"]
+resource_name = "blasterD Melee"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("blasterD:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.018797988, 0.22044913, 0.49900115),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0.042073384, -0.2497384, -0.33208558), Vector3(-0.043, -0.33, -0.268), Vector3(-0.002, -0.33, -0.268), Vector3(0.042073384, -0.2497384, -0.33208558)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("blasterD:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.018797988, 0.22044913, 0.49900115),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, -3.1415925, 0), Vector3(0.16303906, -1.5149108, -1.4173694), Vector3(0.16231562, -1.712168, -1.4172074), Vector3(0, -3.1415925, 0)]
 }
 
 [sub_resource type="Animation" id="Animation_lxx5s"]
@@ -561,6 +589,7 @@ _data = {
 &"RESET": SubResource("Animation_w05lp"),
 &"blasterD Activate": SubResource("Animation_dmd0o"),
 &"blasterD Deactivate": SubResource("Animation_f33hn"),
+&"blasterD Melee": SubResource("Animation_s4fyg"),
 &"blasterD OOA": SubResource("Animation_lxx5s"),
 &"blasterD Reload": SubResource("Animation_rfs87"),
 &"blasterD Shoot": SubResource("Animation_byxru"),
@@ -680,7 +709,7 @@ debug_shape_custom_color = Color(0.91764706, 0.79607844, 0.18039216, 1)
 [node name="WeaponManager" type="Node3D" parent="CameraHolder/Camera" unique_id=1086934584]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.018243995, -0.92792505, 0.7562142)
 script = ExtResource("14_ifmfs")
-_weapon_resources = Array[ExtResource("15_w05lp")]([ExtResource("17_m2cla"), ExtResource("18_8ke6w"), ExtResource("16_gfley")])
+_weapon_resources = Array[ExtResource("15_w05lp")]([ExtResource("16_gfley"), ExtResource("18_s4fyg"), ExtResource("17_m2cla")])
 Start_Weapons = Array[String](["blasterN", "blasterD"])
 
 [node name="FPS_Rig" type="Node3D" parent="CameraHolder/Camera/WeaponManager" unique_id=1739016042]
@@ -694,7 +723,7 @@ transform = Transform3D(-1, 0, 1.509958e-07, 0, 1, 0, -1.509958e-07, 0, -1, 0.02
 visible = false
 
 [node name="blasterD" parent="CameraHolder/Camera/WeaponManager/FPS_Rig" unique_id=1836753534 instance=ExtResource("16_1dajo")]
-transform = Transform3D(-0.99999994, 0, -1.509958e-07, 0, 1, 0, 1.5099579e-07, 0, -1, 0.042073384, -0.2497384, -0.33208558)
+transform = Transform3D(-0.9999999, 0, -1.509958e-07, 0, 0.9999999, 0, 1.5099579e-07, 0, -1, 0.042073384, -0.2497384, -0.33208558)
 visible = false
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="CameraHolder/Camera/WeaponManager/FPS_Rig" unique_id=1831558696]
@@ -704,7 +733,7 @@ libraries/ = SubResource("AnimationLibrary_2pclp")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16884387, -0.178532, -0.6616937)
 
 [node name="RayCast3D" type="RayCast3D" parent="CameraHolder/Camera/WeaponManager/FPS_Rig" unique_id=1355990807]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16869035, -0.17872381, -0.5288507)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16869035, -0.21333933, -0.5288507)
 target_position = Vector3(0, 0, -1)
 
 [node name="Hitbox" type="CollisionShape3D" parent="." unique_id=1746907327]

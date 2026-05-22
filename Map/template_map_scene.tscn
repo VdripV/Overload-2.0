@@ -11,8 +11,8 @@
 [ext_resource type="PackedScene" uid="uid://8wolti2rkt2q" path="res://Map/Spawnable_Weapons/blaster_d.tscn" id="9_43v1x"]
 [ext_resource type="PackedScene" uid="uid://bxwjpayjtdd2g" path="res://Map/Spawnable_Weapons/blaster_k.tscn" id="10_pdlds"]
 [ext_resource type="PackedScene" uid="uid://7m3mdu2x8gld" path="res://Map/Spawnable_Weapons/blaster_n.tscn" id="11_7oo5g"]
-[ext_resource type="PackedScene" uid="uid://bqgwlh6y8rm1h" path="res://enemies/enemy.tscn" id="12_chpsd"]
-[ext_resource type="PackedScene" uid="uid://djhok0gmwl5sv" path="res://enemies/flying_enemy.tscn" id="13_4kf67"]
+[ext_resource type="PackedScene" uid="uid://bqgwlh6y8rm1h" path="res://Map/MovementModifiers/conveyorZone/enemies/enemy.tscn" id="12_chpsd"]
+[ext_resource type="PackedScene" uid="uid://djhok0gmwl5sv" path="res://Map/MovementModifiers/conveyorZone/enemies/flying_enemy.tscn" id="13_4kf67"]
 [ext_resource type="PackedScene" uid="uid://dqm1p77wxcmdh" path="res://SourceFiles/box.tscn" id="14_tg4r2"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_fjbi6"]
@@ -248,7 +248,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 100, 6, -28)
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -16.029999, -1.223, -21.492886)
 use_collision = true
 collision_layer = 5
-collision_mask = 2
+collision_mask = 6
 size = Vector3(28.258972, 9.499871, 1)
 material = ExtResource("4_ivwfa")
 

@@ -8,6 +8,7 @@ class_name Weapon_Resource
 @export var Shoot_Anim: String
 @export var Reload_Anim: String
 @export var Out_Of_Ammo_Anim: String
+@export var Melee_Anim: String
 
 @export var Current_Ammo: int
 @export var Reserve_Ammo: int
@@ -16,7 +17,9 @@ class_name Weapon_Resource
 
 @export var Auto_Fire: bool
 @export var Weapon_Range: int
+@export var Melee_Range: float = 1.5
 @export var Damage: int
+@export var Melee_Damage: int
 @export_flags("HitScan", "Projectile") var Type
 @export var Projectile_To_Load: PackedScene
 @export var Projectile_Velocity: int

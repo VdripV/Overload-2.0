@@ -3,6 +3,8 @@ extends CharacterBody3D
 @onready var nav_agent = $NavigationAgent3D
 
 @export var patrol_path : Node3D
+@export var armor_pickup_scene: PackedScene
+@export var drop_chance: float = 1
 
 const SPEED = 7.0
 const ATTACK_RANGE = 15.0
@@ -227,12 +229,15 @@ func handle_attack_state(delta):
 		set_state(STATE.INVESTIGATE)
 
 func shoot_at_player(player):
+	if not is_inside_tree():
+		return
 	var bullet = bullet_scene.instantiate()
-	bullet.global_position = global_position + (player.global_position - global_position).normalized() * 1.5
 	bullet.Damage = Damage
 	bullet.direction = (player.global_position - global_position).normalized()
-	bullet.look_at(global_position + bullet.direction, Vector3.UP)
 	get_parent().add_child(bullet)
+	bullet.global_position = global_position + bullet.direction * 1.5
+	if bullet.direction != Vector3.ZERO:
+		bullet.look_at(bullet.global_position + bullet.direction, Vector3.UP)
 
 func set_state(new_state):
 	if current_state == new_state:
@@ -265,4 +270,14 @@ func Hit_Successful(damage: int, _Direction := Vector3.ZERO, _Position := Vector
 		set_state(STATE.RUN)
 	
 	if Health <= 0:
+		var death_position = global_position
+		_drop_pickup(death_position)
 		queue_free()
+		
+func _drop_pickup(death_position: Vector3) -> void:
+	if armor_pickup_scene == null:
+		return
+	if randf() <= drop_chance:
+		var pickup = armor_pickup_scene.instantiate()
+		get_parent().add_child(pickup)
+		pickup.global_position = death_position

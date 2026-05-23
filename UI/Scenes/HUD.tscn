@@ -22,8 +22,10 @@ layout_mode = 2
 
 [node name="HP" type="Label" parent="Components/HealthBar" unique_id=883724177]
 layout_mode = 2
+text = "    XP"
 
 [node name="ProgressBar" type="ProgressBar" parent="Components/HealthBar" unique_id=1135951173]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 
 [node name="Label" type="Label" parent="Components/HealthBar" unique_id=1341339037]
@@ -34,8 +36,10 @@ layout_mode = 2
 
 [node name="ARM" type="Label" parent="Components/ArmorBar" unique_id=1058441584]
 layout_mode = 2
+text = "ARM"
 
 [node name="ProgressBar" type="ProgressBar" parent="Components/ArmorBar" unique_id=171444934]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 
 [node name="Label" type="Label" parent="Components/ArmorBar" unique_id=341789803]

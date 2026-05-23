@@ -314,8 +314,13 @@ func hit(damage: int) -> void:
 	if is_dead or invincible:
 		return
 	
-	health -= damage
-	emit_signal("health_changed", health, max_health)
+	if armor > 0:
+		var armor_damage = min(damage, armor)
+		armor -= armor_damage
+		damage -= armor_damage
+	
+	if damage > 0:
+		health -= damage
 	
 	if health <= 0:
 		die()

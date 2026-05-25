@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://bqgwlh6y8rm1h" path="res://Map/MovementModifiers/conveyorZone/enemies/enemy.tscn" id="12_chpsd"]
 [ext_resource type="PackedScene" uid="uid://djhok0gmwl5sv" path="res://Map/MovementModifiers/conveyorZone/enemies/flying_enemy.tscn" id="13_4kf67"]
 [ext_resource type="PackedScene" uid="uid://dqm1p77wxcmdh" path="res://SourceFiles/box.tscn" id="14_tg4r2"]
+[ext_resource type="PackedScene" uid="uid://ycceh25m5av6" path="res://Map/Spawnable_Weapons/blaster_g.tscn" id="15_4kf67"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_fjbi6"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -433,3 +434,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33.032085, 3, -10.478851)
 
 [node name="Box4" parent="." unique_id=1223171925 instance=ExtResource("14_tg4r2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 38.71289, 1, -27.466175)
+
+[node name="blasterG" parent="." unique_id=1458461875 instance=ExtResource("15_4kf67")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.300983, 2.1854217, -23.40154)

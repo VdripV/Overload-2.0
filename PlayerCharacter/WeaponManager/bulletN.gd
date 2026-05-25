@@ -3,8 +3,8 @@ extends RigidBody3D
 @onready var mesh: MeshInstance3D = $foamBulletA
 @onready var ray: RayCast3D = $RayCast3D
 
-var Speed: int = 0
-var Damage: int = 0
+var Speed: int
+var Damage: int
 
 func _process(delta: float) -> void:
 	position += transform.basis * Vector3(0, 0, -Speed) * delta

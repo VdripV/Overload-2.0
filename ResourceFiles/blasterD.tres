@@ -17,6 +17,7 @@ Current_Ammo = 30
 Reserve_Ammo = 90
 Magazine = 30
 Max_Ammo = 120
+Auto_Fire = true
 Weapon_Range = 1000
 Damage = 2
 Melee_Damage = 5

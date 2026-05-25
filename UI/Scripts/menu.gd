@@ -7,6 +7,7 @@ extends Control
 
 const GAME_SCENE = "res://Map/template_map_scene.tscn"
 const SETTINGS_SCENE = "res://UI/Scenes/settings.tscn"
+const STATS_SCENE = "res://UI/Scenes/statistics.tscn"
 
 func _ready() -> void:
 	play_button.pressed.connect(_on_play_pressed)
@@ -22,8 +23,7 @@ func _on_settings_pressed() -> void:
 	get_tree().root.add_child(settings)
 
 func _on_stats_pressed() -> void:
-	# Заглушка
-	pass
+	get_tree().change_scene_to_file(STATS_SCENE)
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()

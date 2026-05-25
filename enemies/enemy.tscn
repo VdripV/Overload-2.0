@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bqgwlh6y8rm1h"]
 
-[ext_resource type="Script" uid="uid://dr36a1q0rdwyp" path="res://enemies/enemy.gd" id="1_fw1ev"]
+[ext_resource type="Script" uid="uid://dr36a1q0rdwyp" path="res://Map/MovementModifiers/conveyorZone/enemies/enemy.gd" id="1_fw1ev"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7frlh"]
 
